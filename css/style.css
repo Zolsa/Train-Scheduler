@@ -1,0 +1,16 @@
+.container, .panel-title, .panel-heading {
+background: -webkit-linear-gradient(176deg, #69434e, #d2a0af);
+}
+
+.jumbotron {
+	background-color: #d2a0af;
+}
+
+.panel-title, .panel-heading {
+	padding: 1%;
+	text-align: center;
+	color: black;	
+}
+
+
+

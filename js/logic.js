@@ -10,38 +10,46 @@ $(document).ready(function() {
     messagingSenderId: "731890395072"
   };
   firebase.initializeApp(config);
-var database = firebase.database();
+  var database = firebase.database();
 
-$("#add-train-btn").on("click", function(event) {
-  event.preventDefault();
 
-  var trainName = $("#train-name-input").val().trim();
-  var trainDestination = $("#destination-input").val().trim();
-  var trainTime = moment($("#time-input").val().trim(), "HH:mm").subtract(1, "years").format("X");
-  var trainFrequency = $("#frequency-input").val().trim();
+  $("#add-train-btn").on("click", function(event) {
+    event.preventDefault();
 
-  var newTrain = {
-    name: trainName,
-    destination: trainDestination,
-    time: trainTime,
-    frequency: trainFrequency
-  };
- 
-  database.ref().push(newTrain);
- 
-  alert("Train successfully added");
-  
-  $("#train-name-input").val("");
-  $("#destination-input").val("");
-  $("#time-input").val("");
-  $("#frequency-input").val("");
+    if(confirm("Are you sure you want to add this train to the schedule?") == true) {
+      var trainName = $("#train-name-input").val().trim();
+      var trainDestination = $("#destination-input").val().trim();
+      var trainTime = moment($("#time-input").val().trim(), "HH:mm").subtract(1, "years").format("X");
+      var trainFrequency = $("#frequency-input").val().trim();
 
-});
+      var newTrain = {
+        name: trainName,
+        destination: trainDestination,
+        time: trainTime,
+        frequency: trainFrequency
+      }
 
-function updateTime() {
-  var now = moment().format("h:mm A");
-  $("#time-display").html("The current time is " + now);
-}
+     
+      database.ref().push(newTrain);
+     
+      alert("Train successfully added");
+      
+      $("#train-name-input").val("");
+      $("#destination-input").val("");
+      $("#time-input").val("");
+      $("#frequency-input").val("");
+    } else {
+      return;
+    }
+
+  });
+
+
+  function updateTime() {
+    var now = moment().format("h:mm:ss A");
+    $("#time-display").html("The current time is " + now);
+  }
+
 
   database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 
@@ -53,19 +61,19 @@ function updateTime() {
     //Time Stuff
     var now = moment();
     var diffTime = now.diff(moment.unix(dataTime), "minutes");
-    var timeRemainder = diffTime % dataFrequency ;
+    var timeRemainder = diffTime % dataFrequency;
     var minutesAway = dataFrequency - timeRemainder;
     var nextTrain = now.add(minutesAway, "minutes").format("hh:mm A"); 
 
     //Update dom
-    
+      
     $("#train-table > tbody").append("<tr><td>" + dataName + "</td><td>" + dataDestination + "</td><td>" +
     dataFrequency + "</td><td>" + nextTrain + "</td><td>" + minutesAway + "</td></tr>");
   });
 
 
-updateTime();
-setInterval(updateTime, 60000);
+  updateTime();
+  setInterval(updateTime, 1000);
 
 });
 
