@@ -38,25 +38,34 @@ $("#add-train-btn").on("click", function(event) {
 
 });
 
- 
-database.ref().on("child_added", function(childSnapshot, prevChildKey) {
+function updateTime() {
+  var now = moment().format("h:mm A");
+  $("#time-display").html("The current time is " + now);
+}
 
-  var dataName = childSnapshot.val().name;
-  var dataDestination = childSnapshot.val().destination;
-  var dataTime = childSnapshot.val().time;
-  var dataFrequency = childSnapshot.val().frequency;
+  database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 
-  //Time Stuff
-  var now = moment();
-  var diffTime = now.diff(moment.unix(dataTime), "minutes");
-  var timeRemainder = diffTime % dataFrequency ;
-  var minutesAway = dataFrequency - timeRemainder;
-  var nextTrain = now.add(minutesAway, "minutes").format("hh:mm A"); 
+    var dataName = childSnapshot.val().name;
+    var dataDestination = childSnapshot.val().destination;
+    var dataTime = childSnapshot.val().time;
+    var dataFrequency = childSnapshot.val().frequency;
 
-  //Update dom
-  $("#train-table > tbody").append("<tr><td>" + dataName + "</td><td>" + dataDestination + "</td><td>" +
-  dataFrequency + "</td><td>" + nextTrain + "</td><td>" + minutesAway + "</td></tr>");
-});
+    //Time Stuff
+    var now = moment();
+    var diffTime = now.diff(moment.unix(dataTime), "minutes");
+    var timeRemainder = diffTime % dataFrequency ;
+    var minutesAway = dataFrequency - timeRemainder;
+    var nextTrain = now.add(minutesAway, "minutes").format("hh:mm A"); 
+
+    //Update dom
+    
+    $("#train-table > tbody").append("<tr><td>" + dataName + "</td><td>" + dataDestination + "</td><td>" +
+    dataFrequency + "</td><td>" + nextTrain + "</td><td>" + minutesAway + "</td></tr>");
+  });
+
+
+updateTime();
+setInterval(updateTime, 60000);
 
 });
 
